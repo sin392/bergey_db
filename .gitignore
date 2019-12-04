@@ -1,4 +1,6 @@
-*.pdf
-*.txt
-test*
-.vscode
+*
+!json/
+!src/
+
+!.gitignore
+!requirements.txt
