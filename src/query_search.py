@@ -44,5 +44,4 @@ print(log.getvalue())
 with open("log.txt", "w") as f:
     f.write(log.getvalue())
 
-
-# %%
+log.close()
