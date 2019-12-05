@@ -24,7 +24,12 @@ if __name__ == "__main__":
     laparams = LAParams()
     laparams.detect_vertical = True
     manager = PDFResourceManager()
+    outfp = StringIO()
+    device = TextConverter(manager, outfp=outfp, codec='utf-8', laparams=laparams)
+    interpreter = PDFPageInterpreter(manager, device)
+
     str_dict = {}
+    head_idx = 0
 
     with open(output_path, "w") as f_out:
         with open(input_path, "rb") as f_in:
@@ -33,9 +38,7 @@ if __name__ == "__main__":
             if not document.is_extractable:
                 raise PDFTextExtractionNotAllowed
             for i, page in enumerate(tqdm(PDFPage.create_pages(document))):
-                outfp = StringIO()
-                device = TextConverter(manager, outfp=outfp, codec='utf-8', laparams=laparams)
-                interpreter = PDFPageInterpreter(manager, device)
                 interpreter.process_page(page)
-                str_dict[i+575] = outfp.getvalue()
+                str_dict[i+575] = outfp.getvalue()[head_idx:]
+                head_idx = len(outfp.getvalue())
         json.dump(str_dict, f_out)

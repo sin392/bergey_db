@@ -4,7 +4,7 @@ from time import time
 import re
 
 # %%
-input_path = "/home/shin/Microbe/BERGEY’S_MANUAL_sample.json"
+input_path = "./json/BERGEY’S_MANUAL_sample.json"
 keyward_list =  ["L-Fructose", "D-tagatose", "Pyruvate", "Catechol", "Succinate"]
 with open(input_path, "r") as f:
     str_dict = json.load(f)
