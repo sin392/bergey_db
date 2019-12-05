@@ -37,7 +37,7 @@ end = time()
 print(log.getvalue())
 
 with open("log.txt", "w") as f:
-    f.write()
+    f.write(log.getvalue())
 
 print("SIZE :", len(str_dict))
 print("TIME :", end - start)
