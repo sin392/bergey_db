@@ -12,7 +12,8 @@ with open(input_path, "r") as f:
 
 # %%
 start = time()
-log = StringIO(initial_value=f"query : {keyward_list}\n")
+log = StringIO()
+print(f"query : {keyward_list}\n", file=log)
 
 for i, page in str_dict.items():
     found_words = []
@@ -34,12 +35,14 @@ for i, page in str_dict.items():
         [print(x, file=log) for x in found_words]
         print("#"*80, file=log)
 end = time()
+
+print("SIZE :", len(str_dict), file=log)
+print("TIME :", end - start, file=log)
+
 print(log.getvalue())
 
 with open("log.txt", "w") as f:
-    f.write()
+    f.write(log.getvalue())
 
-print("SIZE :", len(str_dict))
-print("TIME :", end - start)
 
 # %%
