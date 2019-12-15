@@ -9,7 +9,10 @@ input_path = "./json/BERGEY’S_MANUAL-Betaproteobacteria.json"
 keyward_list =  ["L-Fructose", "D-tagatose", "Pyruvate", "Catechol", "Succinate"]
 with open(input_path, "r") as f:
     str_dict = json.load(f)
-
+# %%
+with open("verb-list.txt", "r") as f:
+    verb_list = f.read().split("\n")
+print(verb_list)
 # %%
 start = time()
 log = StringIO()
@@ -40,8 +43,10 @@ for i, page in str_dict.items():
                     t_idx = -1
                 string = page[h_idx:t_idx].replace("\n", " ").strip()
 
-                # string = page[idx-30:idx+30].replace("\n", " ").strip()
+                used_verbs = [x for x in verb_list if x in string]
+
                 found_words.append(f"{j} : {string}")
+                found_words.append(f"used_verbs : {used_verbs}")
     if len(found_words) > 0:
         print(str(i), file=log)
         [print(x, file=log) for x in found_words]
