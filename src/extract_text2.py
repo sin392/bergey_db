@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from tqdm import tqdm
 
-tree = ET.parse('/home/shin/Microbe/test.xml')
+tree = ET.parse('../xml/test.xml')
 root = tree.getroot()
 print(root)
 
@@ -100,7 +100,7 @@ for child in tqdm(root):
     # if child == root[3]:
     #     break
 
-with open("microbes.txt", "w") as f:
+with open("../txt/microbes.txt", "w") as f:
     for x in microbe_list:
         # x = x.strip()
         # if x.startswith("TABLE") or x.startswith("FIGURE") or len(x) <= 3 \
@@ -110,6 +110,6 @@ with open("microbes.txt", "w") as f:
         #     continue
         # else:
         print(x, file=f)
-with open("pages.txt", "w") as f_p:
+with open("../txt/pages.txt", "w") as f_p:
     for page in pages:
         print(page, file=f_p)

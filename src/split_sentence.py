@@ -1,9 +1,9 @@
 import re
 import json
 
-with open("pages.txt", "r") as f:
+with open("../txt/pages.txt", "r") as f:
     doc = f.read()
-with open("microbes_mo.txt", "r") as f:
+with open("../txt/microbes_mo.txt", "r") as f:
     microbes = [x.strip() for x in f.readlines()]
 
 sentences = doc.replace("-\n", "").split("\n")
@@ -27,5 +27,5 @@ for i, microbe in enumerate(microbes):
 #     print(k)
 #     print(t)
 
-with open("splited_sentence.json", "w") as f:
+with open("../json/splited_sentence.json", "w") as f:
     json.dump(sentences_dict, f)

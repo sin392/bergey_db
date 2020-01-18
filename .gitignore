@@ -1,6 +1,9 @@
 *
 !json/
 !src/
+!csv/
+!txt/
+!xml/
 
 !.gitignore
 !requirements.txt

@@ -8,13 +8,13 @@ from tqdm import tqdm
 # def invalid_re(word):
 #     return word.replace("[",r"\[").replace("]",r"\]").replace("(",r"\(").replace(")",r"\)").replace("-", r"\-")
 
-with open("splited_sentence.json") as f:
+with open("../json/splited_sentence.json") as f:
     sentences_dict = json.load(f)
-with open("search-dictionary_single.txt", "r") as f:
+with open("../txt/search-dictionary_single.txt", "r") as f:
     # keywords = list(map(invalid_re, [x.strip() for x in f.readlines() if len(x.strip()) > 2]))
     keywords = [x.strip() for x in f.readlines() if len(x.strip()) > 2]
     keywords = set(keywords)
-with open("verb-list.csv", "r") as f:
+with open("../csv/verb-list.csv", "r") as f:
     verbs_labels = [x.strip().split(",") for x in f.readlines()]
 
 df = pd.DataFrame(index=keywords, columns=sentences_dict.keys())
@@ -55,4 +55,4 @@ for microbe, sentence in tqdm(sentences_dict.items()):
             print(microbe, raw_keyword, label)
         # break
 
-df.to_csv("output.csv")
+df.to_csv("../csv/output.csv")
