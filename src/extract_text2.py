@@ -36,12 +36,13 @@ for child in tqdm(root):
                             continue
                         else:
                             bold_word += child_4.text
+
                     # space終わりの場合対策に条件文は分ける
                     else:
-                        if bold_word != "" and bold_word[0].isupper():
+                        if bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
                             bold_words.append(bold_word.strip())
                         bold_word = ""
-                    if child_4 == child_3[-1] and bold_word != "" and bold_word[0].isupper():
+                    if child_4 == child_3[-1] and bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
                         bold_words.append(bold_word.strip())
                         bold_word = ""
                     count += 1
@@ -76,12 +77,16 @@ for child in tqdm(root):
                 if len(textline.strip()) > 2:
                     if len(bold_words) > 0 and microbe_list[-1] in textline:
                         for x in bold_words:
+                            # 先頭の数字などはカット 
+                            textline = textline[textline.find(x):]
+
                             textline = textline.replace(x, f"<{x}>")
                             bold_flag = True
                             print(textline)
                     if not textline.endswith(".\n"):
                         textline = textline.replace("\n", " ")
                     textbox += textline
+
         if textbox != "" and bold_flag:
             # for tail in [".\n", ". \n"]:
                 # if textbox.endswith(tail):
@@ -95,10 +100,7 @@ for child in tqdm(root):
         page += textbox
     if child == root[-1]:
         page = page + "<end>\n"
-    # print(page)
     pages.append(page.strip())
-    # if child == root[3]:
-    #     break
 
 with open("../txt/microbes.txt", "w") as f:
     for x in microbe_list:

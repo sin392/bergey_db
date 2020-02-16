@@ -29,6 +29,7 @@ for microbe, sentence in tqdm(sentences_dict.items()):
         labels = []
         if len(match_idx_list) > 0:
             # print(keyword, len(match_idx_list))
+            verb_in = False
             for m in match_idx_list:
                 start = m.start()
                 end = m.end()
@@ -44,14 +45,16 @@ for microbe, sentence in tqdm(sentences_dict.items()):
                 string = sentence[h_idx:t_idx]
                 # print(string)
                 for verb, label in verbs_labels:
-                    splited_string = string.split()
                     if verb in string:
                         labels.append(label)
-                if labels == []:
-                    if "no" in splited_string or "not" in splited_string or "unable" in splited_string:
+                        verb_in = True
+                if not verb_in:
+                    splited_string = string.lower().split()
+                    if "no" in splited_string or "not" in splited_string or "unable" in splited_string \
+                        or "none" in splited_string or "fail" in splited_string or "fail" in splited_string:
                         labels.append(0)
                     else:
-                        labels.append(1)
+                        labels.append(0)
 
         label = np.argmax(np.bincount(labels)) if len(labels) > 0 else -1
         if label != -1:
