@@ -133,6 +133,7 @@ with open("../txt/microbes_mo.txt", "r") as f:
     microbes_mo = [x.strip() for x in f.readlines()]
 
 with open("../csv/microbes.csv", "w") as f:
+    microbe_list = list(set(microbe_list))
     for o, fa, g, s in microbe_list:
         # x = x.strip()
         # if x.startswith("TABLE") or x.startswith("FIGURE") or len(x) <= 3 \
@@ -142,7 +143,7 @@ with open("../csv/microbes.csv", "w") as f:
         #     continue
         # else:
         if s in microbes_mo:
-            print(f"{o}, {fa}, {g}, {s}", file=f)
+            print(f"{o},{fa},{g},{s}", file=f)
 with open("../txt/pages.txt", "w") as f:
     for page in pages:
         print(page, file=f)

@@ -11,13 +11,19 @@ from tqdm import tqdm
 with open("../json/splited_sentence.json") as f:
     sentences_dict = json.load(f)
 with open("../txt/search-dictionary_single.txt", "r") as f:
-    # keywords = list(map(invalid_re, [x.strip() for x in f.readlines() if len(x.strip()) > 2]))
     keywords = [x.strip() for x in f.readlines() if len(x.strip()) > 2]
-    # keywords = set(keywords)
 with open("../csv/verb-list.csv", "r") as f:
     verbs_labels = [x.strip().split(",") for x in f.readlines()]
 
-df = pd.DataFrame(index=keywords, columns=sentences_dict.keys())
+# 分類情報
+with open("../csv/microbes.csv", "r") as f:
+    # print(np.array([x.strip().split(",") for x in f.readlines()]).shape)
+    c_o, c_f, c_g, c_m = np.array([x.strip().split(",") for x in f.readlines()]).transpose(1,0)
+    print(c_o, c_f, c_g, c_m)
+    columns = pd.MultiIndex.from_arrays([c_o, c_f, c_g, c_m])
+
+# df = pd.DataFrame(index=keywords, columns=sentences_dict.keys())
+df = pd.DataFrame(index=keywords, columns=columns)
 
 for microbe, sentence in tqdm(sentences_dict.items()):
     for raw_keyword in keywords:

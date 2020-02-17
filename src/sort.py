@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("../csv/output_sort.csv", converters={'col_name_a':str, 'col_name_b':str})
+df = pd.read_csv("../csv/output.csv", converters={'col_name_a':str, 'col_name_b':str})
 # df = df.replace({"+":1, "-":0})
 print(len(df.index))
 is_nan_list = np.array([True if df.iloc[i,1:].isnull().all() else False for i in range(len(df.index))])

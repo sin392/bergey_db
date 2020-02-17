@@ -3,10 +3,12 @@ import json
 
 with open("../txt/pages.txt", "r") as f:
     doc = f.read()
-with open("../txt/microbes_mo.txt", "r") as f:
-    microbes = [x.strip() for x in f.readlines()]
+# with open("../txt/microbes_mo.txt", "r") as f:
+    # microbes = [x.strip() for x in f.readlines()]
+with open("../csv/microbes.csv", "r") as f:
+    microbes = [x.strip().split(",")[3] for x in f.readlines()]
 
-sentences = doc.replace("-\n", "").split("\n")
+sentences = doc.split("\n")
 sentences = " ".join(sentences)
 
 sentences_dict = {}
@@ -21,7 +23,6 @@ for i, microbe in enumerate(microbes):
         end_idx = m_end.start() + m_keyword.end()
         sentence = sentences[start_idx:end_idx]
         sentences_dict[microbe] = sentence
-    # break
 
 # for k, t in sentences_dict.items():
 #     print(k)
