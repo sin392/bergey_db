@@ -28,49 +28,48 @@ for child in tqdm(root):
             # textline
             textline = ""
             bold_word = ""
-            count = 0
             bold_words = []
-            for child_4 in child_3:
+            for count, child_4 in enumerate(child_3):
                 # text, image, textgroup
                 if type(child_4.text) == str: textline += child_4.text
                 # Order, Family, Genus, Spiecies判定
-                if child_4.tag == "text":
-                    if "font" not in child_4.attrib:
-                        # space
-                        if bold_word != "": bold_word += " "
-                    elif "Bold" in child_4.attrib["font"]:
-                        # 属名等はGenus ~ の後にBoldが来る
-                        if not order_flag and textline.startswith("Order"):
-                            order_flag = True
-                        elif not family_flag and textline.startswith("Family"):
-                            family_flag = True
-                        elif not genus_flag and textline.startswith("Genus"):
-                            genus_flag = True
-                        # 行の先頭のもののみ抜出
-                        if bold_word == "" and count > 5:
-                            continue
-                        else:
-                            bold_word += child_4.text
+                if not child_4.tag == "text":
+                    pass
+                elif "font" not in child_4.attrib:
+                    # space
+                    if bold_word != "": bold_word += " "
+                elif "Bold" in child_4.attrib["font"]:
+                    # 属名等はGenus ~ の後にBoldが来る
+                    if not order_flag and textline.startswith("Order"):
+                        order_flag = True
+                    elif not family_flag and textline.startswith("Family"):
+                        family_flag = True
+                    elif not genus_flag and textline.startswith("Genus"):
+                        genus_flag = True
+                    # 行の先頭から語文字以内にBoldが登場するもののみ抽出
+                    if bold_word != "" or count <= 5:
+                        bold_word += child_4.text
 
-                    # space終わりの場合対策に条件文は分ける
-                    else:
-                        if order_flag:
-                            order_list.append(textline[:-2])
-                            order_flag = False
-                        elif family_flag:
-                            family_list.append(textline[:-2])
-                            family_flag = False
-                        elif genus_flag:
-                            genus_list.append(textline[:-2])
-                            genus_flag = False
-                        if bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
-                            bold_words.append(bold_word.strip())
-                        bold_word = ""
+                # space終わりの場合対策に条件文は分ける
+                else:
+                    if order_flag:
+                        order_list.append(textline[:-2])
+                        order_flag = False
+                    elif family_flag:
+                        family_list.append(textline[:-2])
+                        family_flag = False
+                    elif genus_flag:
+                        genus_list.append(textline[:-2])
+                        genus_flag = False
 
-                    if child_4 == child_3[-1] and bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
+                    if bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
                         bold_words.append(bold_word.strip())
-                        bold_word = ""
-                    count += 1
+                    bold_word = ""
+
+                # １行に複数のBoldが登場する場合の対策
+                if child_4 == child_3[-1] and bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
+                    bold_words.append(bold_word.strip())
+                    bold_word = ""
 
             for i in range(len(bold_words)):
                 if bold_words[i].startswith("TABLE") or bold_words[i].startswith("FIGURE") or len(bold_words[i]) <= 3 \
@@ -86,20 +85,14 @@ for child in tqdm(root):
 
             for name, flag in [("TABLE", table_flag), ("FIGURE", figure_flag)]:
                 if flag:
-                    if child_3.tag == "textline":
-                        if child_3[0].tag == "text":
-                            font_size = child_3[0].attrib["size"]
-                            if float(font_size) >= 10:
-                                flag = False
-                            else:
-                                continue
+                    try:
+                        font_size = child_3[0].attrib["size"]
+                        if float(font_size) >= 10:
+                            flag = False
                         else:
                             continue
-                    else:
+                    except:
                         continue
-                elif textline.startswith(name):
-                    flag = True
-                    break
                 elif textline.startswith(name):
                     flag = True
                     break
@@ -120,10 +113,10 @@ for child in tqdm(root):
                             textline = textline[textline.find(x):]
                             textline = textline.replace(x+" ", f"<{x}>\n")
                             bold_flag = True
-                            # print(textline)
                     textline = textline.replace("- ", "")
                     textbox += textline
 
+        # textbox解析終了時にbold_flagが立ってたら先頭に<end>を付加
         if textbox != "" and bold_flag:
             textbox = "<end>\n" + textbox
             bold_flag = False
@@ -133,7 +126,9 @@ for child in tqdm(root):
         page = page + "\n<end>\n"
     pages.append(page.strip())
 
-# 手作業による修正の反映
+
+
+############### 手作業による修正の反映 ####################
 with open("../txt/microbes_mo.txt", "r") as f:
     microbes_mo = [x.strip() for x in f.readlines()]
 
