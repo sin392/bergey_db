@@ -46,27 +46,24 @@ for child in tqdm(root):
                         family_flag = True
                     elif not genus_flag and textline.startswith("Genus"):
                         genus_flag = True
-                    # 行の先頭から語文字以内にBoldが登場するもののみ抽出
-                    if bold_word != "" or count <= 5:
+                    elif bold_word != "" or count <= 5:
+                        # 行の先頭から語文字以内にBoldが登場するもののみ抽出
                         bold_word += child_4.text
 
                 # space終わりの場合対策に条件文は分ける
-                else:
-                    if order_flag:
-                        order_list.append(textline[:-2])
-                        order_flag = False
-                    elif family_flag:
-                        family_list.append(textline[:-2])
-                        family_flag = False
-                    elif genus_flag:
-                        genus_list.append(textline[:-2])
-                        genus_flag = False
-
-                    if bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
-                        bold_words.append(bold_word.strip())
+                elif order_flag:
+                    order_list.append(textline[:-2])
+                    order_flag = False
+                elif family_flag:
+                    family_list.append(textline[:-2])
+                    family_flag = False
+                elif genus_flag:
+                    genus_list.append(textline[:-2])
+                    genus_flag = False
+                elif bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
+                    bold_words.append(bold_word.strip())
                     bold_word = ""
 
-                # １行に複数のBoldが登場する場合の対策
                 if child_4 == child_3[-1] and bold_word != "" and (bold_word[0].isupper() or bold_word[0] == "“"):
                     bold_words.append(bold_word.strip())
                     bold_word = ""
@@ -83,33 +80,36 @@ for child in tqdm(root):
                 for x in bold_words:
                     microbe_list.append((order_list[-1], family_list[-1], genus_list[-1], x))
 
-            for name, flag in [("TABLE", table_flag), ("FIGURE", figure_flag)]:
-                if flag:
+            flags = [table_flag, figure_flag]
+            flag_names = ["TABLE", "FIGURE"]
+            for i in range(2):
+                if flags[i]:
                     try:
+                        # 文字サイズによるスキップの抜け出し判定
                         font_size = child_3[0].attrib["size"]
                         if float(font_size) >= 10:
-                            flag = False
+                            flags[i] = False
                         else:
                             continue
                     except:
                         continue
-                elif textline.startswith(name):
-                    flag = True
+                elif textline.startswith(flag_names[i]):
+                    # "TABLE" or "FIGURE"が登場した場合スキップフラグ
+                    flags[i] = True
                     break
+            # 更新
+            table_flag, figure_flag = flags
 
-            else:
+            if not table_flag and not figure_flag:
                 if len(textline.strip()) > 2:
-                    if textline.split()[0].isdigit():
+                    if textline.split()[0].isdigit() or textline.split()[0] in ["Order", "Family", "Genus", "ORDER", "FAMILY", "GENUS"]:
+                        # ページ情報、ヘッダーのグループ情報は無視
                         textline = ""
-                        # pass
-                    elif textline.split()[0] in ["Order", "Family", "Genus", "ORDER", "FAMILY", "GENUS"]:
-                        textline = ""
-                        # pass
                     elif not textline.endswith(".\n"):
                         textline = textline.replace("\n", " ")
                     if len(bold_words) > 0 and microbe_list[-1][-1] in textline:
                         for x in bold_words:
-                            # 先頭の数字などはカット 
+                            # 見出し先頭の数字などはカット 
                             textline = textline[textline.find(x):]
                             textline = textline.replace(x+" ", f"<{x}>\n")
                             bold_flag = True
